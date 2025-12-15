@@ -34,7 +34,7 @@ Usage examples:
 
 Slug rules:
 - lower-case; spaces → "-", keep only [a-z0-9-]
-- example: "High Res Network Player" → "high-res-network-player"
+- example: "Your Project Prompt" → "your-project-slug"
 
 Steps:
 1) Normalize the slug per rules above and set as `title`.

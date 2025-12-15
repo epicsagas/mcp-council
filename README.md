@@ -1,16 +1,21 @@
 # LLM Council Automation System
 
+[![Rust](https://img.shields.io/badge/language-Rust-orange.svg)](https://www.rust-lang.org/)
+[![MCP](https://img.shields.io/badge/protocol-MCP-6E5FF5.svg)](https://modelcontextprotocol.io/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/epicsaga)
+
 **Multi-Model Reasoning → Peer Review → Final Synthesis (Rust MCP Server)**
 
 A Rust-based MCP server that enables AI model collaboration through structured peer review. The system implements a 3-stage deliberation process where multiple LLMs collaboratively answer questions with anonymized peer review to prevent bias.
 
-> Inspired by the workflow concept of **karpathy/llm-council** (no license declared as of 2025-12-12); all code and documentation here are independently authored. Primary interface is **Cursor Chat** or **Claude Code** through MCP tools and slash commands.
+> Inspired by the workflow concept of **karpathy/llm-council**. Primary interface is **Cursor Chat** or **Claude Code** through MCP tools and slash commands.
 
 ---
 
 ## Overview (3 Stages)
 
-1) **Stage1 — First Opinions**: One prompt in Cursor with multiple selected models → each model writes its answer to `~/.council/<slug>/*-answer.md`.
+1) **Stage1 — First Opinions**: One prompt in Cursor with multiple selected models or single models → each model writes its answer to `~/.council/<slug>/*-answer.md`.
 2) **Stage2 — Peer Review**: 
    - Run `/peer_review <slug> by <model>` to generate a review prompt (excludes the model's own response)
    - The model generates the review content
@@ -23,7 +28,7 @@ A Rust-based MCP server that enables AI model collaboration through structured p
 
 ```
 [Chat Commands (Cursor/Claude Code)]
-  ├─ /first_answer "<title>"            -> Stage1 capture (multi-model answers)
+  ├─ /first_answer {slug} "prompt"      -> Stage1 capture (multi-model answers)
   ├─ /summarize <slug> <model> <content> -> tools.council.summarize (Optional: reduce token costs)
   ├─ /save_summary <slug> <model> <content> -> tools.council.save_summary (Save summary)
   ├─ /peer_review <slug> by <model>     -> tools.council.peer_review (Stage2, self-exclusion)
@@ -53,9 +58,9 @@ mcp-council/          # Rust MCP server source
 Outputs example:
 
 ```
-.council/high-res-network-player/
+.council/your-project-slug/
   ├─ gpt-5-answer.md
-  ├─ claude-answer.md
+  ├─ sonnet-answer.md
   ├─ gemini-answer.md
   ├─ summary.md                    # Optional: summary for large documents
   ├─ peer-review-by-sonnet.md
@@ -67,10 +72,10 @@ Outputs example:
 ## Chat Commands (Universal for Cursor/Claude Code)
 
 - **Stage1 (collect answers)**
-  `/first_answer "High Res Network Player"`
+  `/first_answer your-project-slug "Your Project Prompt"`
 - **Stage2 (peer review, with self-exclusion)**
   ```
-  /peer_review high-res-network-player by glm-4.6
+  /peer_review your-project-slug by gpt-5.2
   ```
   - Automatically excludes the specified model's own response
   - Returns structured prompt for current model to process
@@ -79,7 +84,7 @@ Outputs example:
   
   **Fallback: Manual save (if needed)**
   ```
-  /save_review high-res-network-player glm-4.6 "Review content..."
+  /save_review your-project-slug glm-4.6 "Review content..."
   ```
   - Use this only if the model didn't automatically save the review
   - Saves peer review to `peer-review-by-glm-4.6.md`
@@ -87,19 +92,19 @@ Outputs example:
 
 - **Stage3 (final synthesis)**
   ```
-  /finalize high-res-network-player by claude
+  /finalize your-project-slug by claude
   ```
   - Synthesizes all responses and reviews
   - Uses `by <model>` format to specify the synthesizing model
 
 - **Optional: Summarize large documents (reduce token costs)**
   ```
-  /summarize high-res-network-player sonnet "Very long document..." max_length=2000
+  /summarize your-project-slug sonnet "Very long document..." max_length=2000
   ```
   - Generates a summary prompt for large documents
   - After model generates summary, save it:
   ```
-  /save_summary high-res-network-player sonnet "Summary content..."
+  /save_summary your-project-slug sonnet "Summary content..."
   ```
   - Saves to `summary.md` for use in Stage2/Stage3 to reduce token costs
 

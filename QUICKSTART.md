@@ -33,8 +33,11 @@ List the key technical considerations for a high-end network audio player.
 
 ### Step 2: Run Stage1 (Cursor Chat, single prompt → multiple models)
 
+Use a **slug** derived from your question (lowercase, spaces → `-`, only `[a-z0-9-]`),  
+then pass the human-readable prompt title:
+
 ```
-/first_answer "High Res Network Player"
+/first_answer your-project-slug "Your Project Prompt"
 ```
 
 This command reads answers from:
@@ -46,7 +49,7 @@ This command reads answers from:
 And saves them to (default root):
 
 ```
-~/.council/high-res-network-player/
+~/.council/your-project-slug/
 ```
 
 Behind the scenes, `/first_answer` calls the MCP tool `council.first_answer` per model tab so file writing is handled by the tool (not by the model itself).
@@ -70,7 +73,7 @@ If your original document or prompt is very large, you can summarize it before S
 **Step 1: Generate summary prompt**
 
 ```
-/summarize high-res-network-player sonnet "Very long document content..." max_length=2000
+/summarize your-project-slug sonnet "Very long document content..." max_length=2000
 ```
 
 This generates a summary prompt and saves it to `summary-prompt.md`.
@@ -80,7 +83,7 @@ This generates a summary prompt and saves it to `summary-prompt.md`.
 After the model generates the summary:
 
 ```
-/save_summary high-res-network-player sonnet "Summary content..."
+/save_summary your-project-slug sonnet "Summary content..."
 ```
 
 This saves the summary to `summary.md`, which can be used in Stage2/Stage3 instead of the full document.
@@ -96,7 +99,7 @@ Once Stage1 is ready, pick a model tab and run Peer Review there:
 **Cursor Chat command** (from `.cursor/commands/cc/peer_review.md`, run inside a model tab):
 
 ```
-/peer_review high-res-network-player by sonnet
+/peer_review your-project-slug by sonnet
 ```
 
 (`by <model>` sets `self_model` to exclude that model's own answer.)
@@ -114,7 +117,7 @@ The tool generates a review prompt, and the model creates the peer review conten
 If the model didn't automatically save the review, use:
 
 ```
-/save_review high-res-network-player sonnet
+/save_review your-project-slug sonnet
 ```
 
 This calls `tools.council.save_review` and saves the review to:
@@ -132,7 +135,7 @@ peer-review-by-sonnet.md
 **Cursor Chat command** (from `.cursor/commands/cc/finalize.md`, run inside one model tab):
 
 ```
-/finalize high-res-network-player by sonnet
+/finalize your-project-slug by sonnet
 ```
 
 (Use `by <model>` format to specify the synthesizing model, consistent with `peer_review`.)
@@ -158,7 +161,7 @@ You get a single best-quality answer that incorporates all model opinions and re
 ## Result file layout
 
 ```
-~/.council/high-res-network-player/
+~/.council/your-project-slug/
   ├── gpt-5-answer.md
   ├── sonnet-answer.md
   ├── gemini-answer.md

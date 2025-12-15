@@ -27,7 +27,7 @@ The purpose is to capture the current model's Stage1 answer, not to wait for mul
 Rules:
 1) Slug:
    - lower-case; spaces → "-", keep only [a-z0-9-]
-   - example: "High Res Network Player" → "high-res-network-player"
+   - example: "Your Project Prompt" → "your-project-slug"
 2) Directory: `.council/{slug}` (the MCP tool will create it if missing).
 3) Determine `model` from the current tab name (e.g., Sonnet → `sonnet`, GPT-5.1 → `gpt-5-1`, gemini-2.5 → `gemini-2-5`). If unsure, ask the user.
 4) Pick the latest user question as `prompt`. If none, use the command context (e.g., the file or topic mentioned in the council command).
