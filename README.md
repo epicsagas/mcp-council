@@ -3,6 +3,7 @@
 [![Rust](https://img.shields.io/badge/language-Rust-orange.svg)](https://www.rust-lang.org/)
 [![MCP](https://img.shields.io/badge/protocol-MCP-6E5FF5.svg)](https://modelcontextprotocol.io/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/mcp-council.svg)](https://crates.io/crates/mcp-council)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/epicsaga)
 
 **Multi-Model Reasoning → Peer Review → Final Synthesis (Rust MCP Server)**
@@ -122,15 +123,40 @@ Outputs example:
 
 ## Install & Wire Up
 
-1) **Build MCP server**
+### Option 1: Install from crates.io (Recommended)
 
 ```bash
-cargo build --release
-cp target/release/mcp-council ~/.local/bin/
-chmod +x ~/.local/bin/mcp-council
+cargo install mcp-council
 ```
 
-2) **Register MCP in Cursor** (`~/.cursor/mcp.json`)
+This installs `mcp-council` binary to `~/.cargo/bin/` which is typically in your PATH.
+
+Add to your MCP config (~/.cursor/mcp.json or ~/.claude/claude_desktop_config.json):
+
+```json
+{
+  "mcpServers": {
+    "llm-council": {
+      "command": "mcp-council",
+      "args": []
+    }
+  }
+}
+```
+
+That's it! Now you can use /first_answer, /peer_review, /finalize commands in Cursor or Claude Code.
+
+
+### Option 2: Build from source
+
+```bash
+git clone https://github.com/epicsagas/mcp-council.git
+cd mcp-council
+cargo build --release
+cp target/release/mcp-council ~/.local/bin/
+```
+
+### Register MCP in Cursor (`~/.cursor/mcp.json`)
 
 ```json
 {
@@ -143,7 +169,7 @@ chmod +x ~/.local/bin/mcp-council
 }
 ```
 
-3) **Install chat commands**
+### Install chat commands
 
 ```bash
 # Ensure council root exists (home-scoped)

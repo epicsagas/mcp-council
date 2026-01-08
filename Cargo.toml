@@ -3,6 +3,19 @@ name = "mcp-council"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
+description = "MCP server for multi-LLM peer review and council deliberation workflow"
+repository = "https://github.com/epicsagas/mcp-council"
+homepage = "https://github.com/epicsagas/mcp-council"
+documentation = "https://github.com/epicsagas/mcp-council#readme"
+readme = "README.md"
+keywords = ["mcp", "llm", "ai", "peer-review", "council"]
+categories = ["command-line-utilities", "development-tools"]
+authors = ["epicsagas"]
+rust-version = "1.75"
+
+[[bin]]
+name = "mcp-council"
+path = "src/main.rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

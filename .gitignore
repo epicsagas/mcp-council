@@ -94,3 +94,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/rust,macos,windows,linux
 
 *.local.json
+
+# Local History (VS Code extension)
+.history/
