@@ -126,12 +126,21 @@ Outputs example:
 ### Option 1: Install from crates.io (Recommended)
 
 ```bash
+# Install binary
 cargo install mcp-council
+
+# Install slash commands (interactive - prompts for subfolder name)
+mcp-council --init          # Both Cursor and Claude Code
+mcp-council --init-cursor   # Cursor only
+mcp-council --init-claude   # Claude Code only
+
+# Example interaction:
+# $ mcp-council --init
+# Enter subfolder name (leave empty for default 'cc'): council
+# -> Installs to ~/.cursor/commands/council/ and ~/.claude/commands/council/
 ```
 
-This installs `mcp-council` binary to `~/.cargo/bin/` which is typically in your PATH.
-
-Add to your MCP config (~/.cursor/mcp.json or ~/.claude/claude_desktop_config.json):
+Add to your MCP config (`~/.cursor/mcp.json` or `~/.claude/claude_desktop_config.json`):
 
 ```json
 {
@@ -144,7 +153,7 @@ Add to your MCP config (~/.cursor/mcp.json or ~/.claude/claude_desktop_config.js
 }
 ```
 
-That's it! Now you can use /first_answer, /peer_review, /finalize commands in Cursor or Claude Code.
+Done! Now you can use `/first_answer`, `/peer_review`, `/finalize` commands.
 
 
 ### Option 2: Build from source
