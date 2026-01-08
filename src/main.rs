@@ -4,6 +4,7 @@ mod cli_runner;
 
 use anyhow::Result;
 use mcp::McpServer;
+use serde_json::{json, Value};
 use std::env;
 use std::fs;
 use std::io::{self, Write};
@@ -74,6 +75,88 @@ fn install_commands_to(cmd_dir: PathBuf) -> Result<()> {
     Ok(())
 }
 
+fn merge_mcp_config(config_path: &PathBuf) -> Result<bool> {
+    let mcp_council_config = json!({
+        "command": "mcp-council",
+        "args": []
+    });
+
+    let mut config: Value = if config_path.exists() {
+        let content = fs::read_to_string(config_path)?;
+        serde_json::from_str(&content).unwrap_or_else(|_| json!({}))
+    } else {
+        json!({})
+    };
+
+    // Ensure mcpServers exists
+    if !config.get("mcpServers").is_some() {
+        config["mcpServers"] = json!({});
+    }
+
+    // Check if mcp-council already exists
+    let already_exists = config["mcpServers"].get("mcp-council").is_some();
+
+    // Add or update mcp-council
+    config["mcpServers"]["mcp-council"] = mcp_council_config;
+
+    // Write back with pretty formatting
+    let formatted = serde_json::to_string_pretty(&config)?;
+    fs::write(config_path, formatted)?;
+
+    Ok(already_exists)
+}
+
+fn setup_mcp_config(target: &str) -> Result<()> {
+    let home = env::var("HOME").expect("HOME environment variable not set");
+
+    match target {
+        "cursor" => {
+            let config_path = PathBuf::from(&home).join(".cursor").join("mcp.json");
+            let already_exists = merge_mcp_config(&config_path)?;
+            if already_exists {
+                eprintln!("  Updated: {}", config_path.display());
+            } else {
+                eprintln!("  Added: {}", config_path.display());
+            }
+        }
+        "claude" => {
+            let config_path = PathBuf::from(&home).join(".claude.json");
+            let already_exists = merge_mcp_config(&config_path)?;
+            if already_exists {
+                eprintln!("  Updated: {}", config_path.display());
+            } else {
+                eprintln!("  Added: {}", config_path.display());
+            }
+        }
+        "both" => {
+            let cursor_path = PathBuf::from(&home).join(".cursor").join("mcp.json");
+            let claude_path = PathBuf::from(&home).join(".claude.json");
+
+            // Ensure .cursor directory exists
+            fs::create_dir_all(PathBuf::from(&home).join(".cursor"))?;
+
+            let cursor_exists = merge_mcp_config(&cursor_path)?;
+            let claude_exists = merge_mcp_config(&claude_path)?;
+
+            eprintln!();
+            eprintln!("[MCP Config]");
+            if cursor_exists {
+                eprintln!("  Updated: {}", cursor_path.display());
+            } else {
+                eprintln!("  Added: {}", cursor_path.display());
+            }
+            if claude_exists {
+                eprintln!("  Updated: {}", claude_path.display());
+            } else {
+                eprintln!("  Added: {}", claude_path.display());
+            }
+        }
+        _ => {}
+    }
+
+    Ok(())
+}
+
 fn install_commands(base_dir: &str, subfolder: &str) -> Result<()> {
     let home = env::var("HOME").expect("HOME environment variable not set");
     let cmd_dir = PathBuf::from(&home).join(base_dir).join("commands").join(subfolder);
@@ -95,17 +178,29 @@ async fn main() -> Result<()> {
             eprintln!("[Cursor]");
             install_commands(".cursor", &subfolder)?;
             eprintln!("\n[Claude Code]");
-            install_commands(".claude", &subfolder)
+            install_commands(".claude", &subfolder)?;
+            setup_mcp_config("both")?;
+            eprintln!();
+            eprintln!("✅ Installation complete! Restart Cursor/Claude Code to activate.");
+            Ok(())
         }
         Some("--init-cursor") => {
             let subfolder = prompt_subfolder();
             eprintln!();
-            install_commands(".cursor", &subfolder)
+            install_commands(".cursor", &subfolder)?;
+            setup_mcp_config("cursor")?;
+            eprintln!();
+            eprintln!("✅ Installation complete! Restart Cursor to activate.");
+            Ok(())
         }
         Some("--init-claude") => {
             let subfolder = prompt_subfolder();
             eprintln!();
-            install_commands(".claude", &subfolder)
+            install_commands(".claude", &subfolder)?;
+            setup_mcp_config("claude")?;
+            eprintln!();
+            eprintln!("✅ Installation complete! Restart Claude Code to activate.");
+            Ok(())
         }
         _ => {
             let mut server = McpServer::new();

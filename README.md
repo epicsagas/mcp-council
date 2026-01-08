@@ -140,12 +140,12 @@ mcp-council --init-claude   # Claude Code only
 # -> Installs to ~/.cursor/commands/council/ and ~/.claude/commands/council/
 ```
 
-Add to your MCP config (`~/.cursor/mcp.json` or `~/.claude/claude_desktop_config.json`):
+Add to your MCP config (`~/.cursor/mcp.json` for Cursor, `~/.claude.json` for Claude Code):
 
 ```json
 {
   "mcpServers": {
-    "llm-council": {
+    "mcp-council": {
       "command": "mcp-council",
       "args": []
     }
@@ -170,7 +170,7 @@ cp target/release/mcp-council ~/.local/bin/
 ```json
 {
   "servers": {
-    "llm-council": {
+    "mcp-council": {
       "command": "mcp-council",
       "args": []
     }
